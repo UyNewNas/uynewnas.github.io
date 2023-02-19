@@ -1,0 +1,92 @@
+version: "3"
+
+networks:
+  traefik:
+    name: traefik
+    attachable: true
+  halo:
+
+services:
+  halo:
+    image: halohub/halo:2.2.0
+    container_name: halo
+    restart: on-failure:3
+    depends_on:
+      halodb:
+        condition: service_healthy
+    networks:
+      - traefik
+      - halo
+    volumes:
+      - ./:/root/.halo2
+    ports:
+      - "8090:8090"
+    command:
+      - --spring.r2dbc.url=r2dbc:pool:postgresql://halodb/halo
+      - --spring.r2dbc.username=halo
+      - --spring.r2dbc.password=
+      - --spring.sql.init.platform=postgresql
+      - --halo.external-url=https://uynewnas.github.io/
+      - --halo.security.initializer.superadminusername=admin
+      - --halo.security.initializer.superadminpassword=
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik
+      traefik.http.routers.halo.rule: Host(`uynewnas.github.io`)
+      traefik.http.routers.halo.tls: "true"
+      traefik.http.routers.halo.tls.certresolver: myresolver
+      traefik.http.services.halo.loadbalancer.server.port: 8090
+
+  halodb:
+    image: postgres:latest
+    container_name: halodb
+    restart: on-failure:3
+    networks:
+      halo:
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_PASSWORD=
+      - POSTGRES_USER=halo
+      - POSTGRES_DB=halo
+      - PGUSER=halo
+
+  traefik:
+    image: traefik:v2.9
+    container_name: traefik
+    networks:
+      - traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./acme.json:/acme.json
+    command: >
+      --api.dashboard=true
+      --entrypoints.web.address=:80
+      --entrypoints.websecure.address=:443
+      --entrypoints.web.http.redirections.entrypoint.to=websecure
+      --entrypoints.web.http.redirections.entrypoint.scheme=https
+      --providers.docker=true
+      --providers.docker.endpoint=unix:///var/run/docker.sock
+      --providers.docker.watch=true
+      --providers.docker.exposedByDefault=false
+      --certificatesResolvers.myresolver.acme.httpChallenge.entryPoint=web
+      --certificatesresolvers.myresolver.acme.email=ch4nslava@mail.com
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik
+      traefik.http.routers.dashboard.rule: Host(`uynewnas.github.io`)
+      traefik.http.routers.dashboard.tls: "true"
+      traefik.http.routers.dashboard.tls.certresolver: myresolver
+      traefik.http.routers.dashboard.service: "api@internal"
+      traefik.http.routers.dashboard.middlewares: auth
+      traefik.http.middlewares.auth.basicauth.users: "admin:xxxx"
