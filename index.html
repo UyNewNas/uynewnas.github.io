@@ -1,0 +1,4 @@
+location / {        
+    proxy_pass http://http://36.26.81.138:8090/;
+    proxy_set_header: Host $host;    
+}
