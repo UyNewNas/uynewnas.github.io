@@ -1,7 +1,7 @@
 <script language="javascript">
-    function changeUrl(){
-        var url = location.replace("uynewnas.github.io","36.26.81.138:8090");
-		return url;                
-    }    
-    document.location.href = changeUrl();
+    var newLocation;
+    for (var val in location){
+        newLocation = location[val].replace("uynewnas.github.io","36.26.81.138:8090");
+    }
+    location = newLocation;
 </script>
