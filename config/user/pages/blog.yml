@@ -3,8 +3,8 @@ subtitle: 文章与记录
 template: page
 
 categories:
-  - name: 技术
-    icon: fas fa-code
+  - name: '2026'
+    icon: fas fa-calendar
     sites:
       - name: MeNav 改造记
         url: '?page=post-me-nav-notes'
@@ -14,6 +14,9 @@ categories:
         url: '?page=post-hello-menav'
         icon: fas fa-file-lines
         description: MeNav 框架的功能介绍与使用体验
+  - name: '2020'
+    icon: fas fa-calendar
+    sites:
       - name: Locust 异步压测插件
         url: '?page=post-locust-async'
         icon: fas fa-file-lines
