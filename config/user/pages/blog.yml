@@ -1,0 +1,16 @@
+title: 博客
+subtitle: 文章与记录
+template: page
+
+categories:
+  - name: 技术
+    icon: fas fa-code
+    sites:
+      - name: MeNav 改造记
+        url: '?page=post-me-nav-notes'
+        icon: fas fa-file-lines
+        description: 把 GitHub 主页从重定向改造成 MeNav 导航站的全过程
+      - name: 你好，MeNav
+        url: '?page=post-hello-menav'
+        icon: fas fa-file-lines
+        description: MeNav 框架的功能介绍与使用体验
