@@ -1,0 +1,39 @@
+title: 'uynewnas 导航'
+description: 'uynewnas 的个人导航站，收录常用工具与项目'
+keywords: '导航,项目,github pages,个人主页'
+author: 'uynewnas'
+
+favicon: 'favicon.ico'
+logo_text: 'uynewnas'
+footer: 'uynewnas'
+
+icons:
+  mode: favicon
+  region: cn
+
+theme:
+  mode: dark
+
+fonts:
+  source: system
+
+profile:
+  title: 'uynewnas'
+  subtitle: '代码 · 游戏 · 折腾'
+
+github:
+  username: uynewnas
+  heatmapColor: '6c5ce7'
+
+social:
+  - name: 'GitHub'
+    url: 'https://github.com/uynewnas'
+    icon: 'fab fa-github'
+
+navigation:
+  - name: '导航'
+    icon: 'fas fa-compass'
+    id: 'common'
+  - name: '项目'
+    icon: 'fas fa-project-diagram'
+    id: 'projects'

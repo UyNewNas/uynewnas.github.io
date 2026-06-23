@@ -1,0 +1,19 @@
+/* ============================================
+   Menav Style System - Layered Entry Point
+   ============================================
+
+   分层 CSS 架构：
+   - tokens.css：尺寸、间距、圆角、动效和派生 token
+   - themes.css：默认深色主题与 Notion 风格浅色主题
+   - base.css：全局基础样式与动画
+   - layout.css：页面与模板布局
+   - components.css：侧边栏、搜索、卡片、表单、内容、仪表盘组件
+   - utilities.css：响应式、热力图和待后续拆分的兜底样式
+   ============================================ */
+
+@import './styles/tokens.css';
+@import './styles/themes.css';
+@import './styles/base.css';
+@import './styles/layout.css';
+@import './styles/components.css';
+@import './styles/utilities.css';

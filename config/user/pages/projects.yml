@@ -1,0 +1,32 @@
+title: 项目
+subtitle: 我的开源项目
+template: projects
+
+categories:
+  - name: GitHub Pages
+    icon: fas fa-rocket
+    sites:
+      - name: 3dgo-web
+        url: https://github.com/uynewnas/3dgo-web
+        icon: fab fa-github
+        description: 3D 围棋 Web 版
+      - name: OpenMir
+        url: https://github.com/uynewnas/OpenMir
+        icon: fab fa-github
+        description: 类传奇自动挂机刷宝升级游戏
+      - name: sudoku
+        url: https://github.com/uynewnas/sudoku
+        icon: fab fa-github
+        description: 数独游戏
+      - name: aic-wiki
+        url: https://github.com/uynewnas/aic-wiki
+        icon: fab fa-github
+        description: 'Arknights: Endfield Wiki'
+      - name: eml-pytorch
+        url: https://github.com/uynewnas/eml-pytorch
+        icon: fab fa-github
+        description: 'Hardware-efficient EML operator for PyTorch'
+      - name: hexlolfun
+        url: https://github.com/uynewnas/hexlolfun
+        icon: fab fa-github
+        description: 趣味小工具

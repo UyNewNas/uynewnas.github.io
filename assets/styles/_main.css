@@ -1,0 +1,220 @@
+/* ============================================
+   Main CSS - 分类层级、热力图、响应式
+   ============================================
+   
+   此文件包含以下未独立拆分的样式：
+   - 分类层级样式 (.category, .category-level-*, .group-*)
+   - GitHub 热力图 (.gh-*)
+   - 全局响应式设计 (@media)
+   - 搜索结果区域 (#search-results)
+   
+   ============================================ */
+
+/* 剩余兜底样式：搜索结果、页面过渡和侧边栏遗留规则 */
+/* 搜索结果页面 */
+#search-results {
+  position: relative;
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  /* 保持在搜索框之下，避免滚动时覆盖 sticky 的搜索容器 */
+  z-index: 1;
+  transform: none !important;
+  /* 确保没有变换 */
+  min-height: 400px;
+  /* 确保最小高度，防止内容过少时的布局跳动 */
+}
+
+#search-results.active {
+  display: flex;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* 搜索结果区域 */
+.search-section {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin: 0 auto 2.5rem auto;
+  position: relative;
+  z-index: 1;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+/* 确保搜索结果中的网格有正确的间距 */
+.search-section .sites-grid {
+  margin-top: 1rem;
+}
+
+/* 搜索结果页：按来源页面复用对应网格规则（方案 2：复用原卡片 DOM） */
+#search-results [data-section='projects'] .sites-grid {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+#search-results [data-section='articles'] .sites-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1024px) {
+  #search-results [data-section='articles'] .sites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  #search-results [data-section='articles'] .sites-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+}
+
+/* 确保搜索结果中的卡片样式一致 */
+.search-section .site-card {
+  max-width: 100%;
+}
+
+/* 加载中动画 */
+.page {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.page.active {
+  opacity: 1;
+}
+
+/* 模态框动画 */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalContentShow {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.sites-grid {
+  transition: gap 0.3s ease;
+}
+
+/* 侧边栏底部：社交图标（位于 sidebar-footer 上方） */
+.sidebar-social {
+  grid-area: social;
+  padding: 0.2rem 1.2rem 0.8rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  border-radius: var(--radius-full);
+  color: var(--nav-item-color);
+  text-decoration: none;
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.social-icon:hover {
+  color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.social-icon:active {
+  transform: translateY(0);
+}
+
+.social-icon:focus-visible {
+  outline: 2px solid var(--accent-glow-medium);
+  outline-offset: 2px;
+}
+
+.social-icon i {
+  width: auto;
+  font-size: 1.2rem;
+}
+
+/* 侧边栏底部：版权信息 */
+.sidebar-footer {
+  grid-area: footer;
+  padding: 1rem 1.2rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--sidebar-bg);
+  /* 使用变量 */
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.sidebar-footer .copyright {
+  margin: 0;
+}
+
+.sidebar.collapsed .sidebar-social {
+  padding: 0.2rem 0.5rem 0.8rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.copyright a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.copyright a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* 导航项包装器 - 包含导航项和子菜单 */
+.nav-item-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* 子菜单容器 */
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  margin-left: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* 子菜单展开状态 */
+.nav-item-wrapper.expanded .submenu {
+  max-height: none;
+  overflow: visible;
+  opacity: 1;
+  visibility: visible;
+}

@@ -1,0 +1,149 @@
+name: Build and Deploy Site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # 定时刷新 RSS / projects 仓库元信息（GitHub Actions 的 cron 使用 UTC 时区）
+    - cron: '0 2 * * *'
+
+# 设置GITHUB_TOKEN的权限
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# 允许一个并发部署
+concurrency:
+  # 说明：
+  # - 本工作流在检测到 bookmarks/*.html 时会自动导入并 push 回主分支
+  # - 若 concurrency group 统一为固定值，会导致“自触发的 push run”取消当前正在部署的 run（cancel-in-progress）
+  # - 这里仅对 actions bot 的 push run 单独分组，避免误取消当前 run；其余触发保持全局串行
+  group: ${{ github.event_name == 'push' && github.actor == 'github-actions[bot]' && 'pages-bot-push' || 'pages' }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_deploy:
+    # 防自触发：CI 自己 push 产生的 push 事件不需要再部署（本次 run 已完成导入并继续部署）
+    if: ${{ github.event_name != 'push' || github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # 使用persist-credentials: false，以便后续步骤可以使用自定义的提交者
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # 获取所有历史记录以进行diff检查
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # --- 书签处理步骤 ---
+      - name: Check for bookmark HTML files
+        id: check_bookmark_files
+        run: |
+          if [ -d bookmarks ] && [ "$(find bookmarks -type f -name "*.html" 2>/dev/null)" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "Bookmark HTML files found, will process them."
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "No bookmark HTML files found, skipping bookmark processing."
+          fi
+
+      - name: Process bookmark files
+        if: steps.check_bookmark_files.outputs.found == 'true'
+        env:
+          MENAV_BOOKMARKS_DETERMINISTIC: '1'
+        run: |
+          echo "Processing bookmark files..."
+          npm run import-bookmarks
+
+      - name: Commit & push bookmark import result (single commit)
+        if: steps.check_bookmark_files.outputs.found == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # 校验导入结果（核心产物必须存在）
+          if [ ! -f config/user/pages/bookmarks.yml ]; then
+            echo "ERROR: config/user/pages/bookmarks.yml does not exist! Bookmark processing may have failed."
+            echo "Directory listing for config/user/pages:"
+            ls -la config/user/pages/ || echo "Directory does not exist"
+            exit 1
+          fi
+
+          echo "Cleaning up processed bookmark HTML files..."
+          HTML_FILES=$(find bookmarks -type f -name "*.html" 2>/dev/null || true)
+          FILE_COUNT=0
+          if [ -n "${HTML_FILES}" ]; then
+            FILE_COUNT=$(echo "${HTML_FILES}" | wc -l | tr -d ' ')
+            find bookmarks -type f -name "*.html" -delete
+            echo "Removed ${FILE_COUNT} HTML files."
+          else
+            echo "No HTML files found to clean up."
+          fi
+
+          git config --local user.email "action@github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # 注意：配置系统采用“完全替换”，一旦写回 config/user/，后续构建会忽略 config/_default/
+          # 因此这里必须整体提交 config/user/（避免只提交书签页导致其它页面配置缺失）
+          git add -A config/user bookmarks
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(bookmarks): 导入书签并写回用户配置"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref_name }}
+      # --- 书签处理步骤结束 ---
+      # --- 网站构建和部署步骤 ---
+      # 同步时效性数据（best-effort）：projects 仓库信息、articles RSS 聚合
+      # 说明：
+      # - 同步结果写入 dev/（仓库默认 gitignore），仅用于本次构建渲染
+      # - 同步脚本内部已做 best-effort（失败不阻断后续 build）
+      - name: Sync dynamic caches (best-effort)
+        run: npm run sync
+
+      - name: Build site (clean dist + generate)
+        run: npm run build
+
+      - name: Check favicon
+        run: |
+          if [ -f dist/favicon.ico ]; then
+            echo "Favicon exists"
+            ls -l dist/favicon.ico
+          else
+            echo "Warning: favicon.ico not found in dist directory"
+            # 暂时改为警告，避免因为图标问题阻止部署
+            # exit 1
+          fi
+
+      # GitHub Pages 部署步骤（仅在启用时执行）
+      # 说明：
+      # - 如果你使用 Vercel/Cloudflare Pages 等第三方平台部署，可以跳过这些步骤
+      # - 设置 repository variable ENABLE_GITHUB_PAGES=false 来禁用 GitHub Pages 部署
+      # - 默认启用 GitHub Pages 部署以保持向后兼容
+      - name: Setup Pages
+        if: ${{ vars.ENABLE_GITHUB_PAGES != 'false' }}
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        if: ${{ vars.ENABLE_GITHUB_PAGES != 'false' }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist'
+
+      - name: Deploy to GitHub Pages
+        if: ${{ vars.ENABLE_GITHUB_PAGES != 'false' }}
+        id: deployment
+        uses: actions/deploy-pages@v4

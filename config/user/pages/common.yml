@@ -1,0 +1,76 @@
+title: 导航
+subtitle: 个人项目与常用网站
+template: page
+
+categories:
+  - name: GitHub Pages 项目
+    icon: fas fa-rocket
+    sites:
+      - name: OpenMir
+        url: https://uynewnas.github.io/OpenMir/
+        icon: fas fa-gamepad
+        description: 类传奇自动挂机刷宝游戏
+      - name: 3dgo-web
+        url: https://uynewnas.github.io/3dgo-web/
+        icon: fas fa-globe
+        description: 3D 围棋 Web 版
+      - name: sudoku
+        url: https://uynewnas.github.io/sudoku/
+        icon: fas fa-grid
+        description: 数独游戏
+      - name: aic-wiki
+        url: https://uynewnas.github.io/aic-wiki/
+        icon: fas fa-book
+        description: 'Arknights: Endfield Wiki'
+      - name: eml-pytorch
+        url: https://uynewnas.github.io/eml-pytorch/
+        icon: fas fa-brain
+        description: 'Exp-Minus-Log operator for PyTorch'
+      - name: hexlolfun
+        url: https://uynewnas.github.io/hexlolfun/
+        icon: fas fa-heart
+        description: 趣味小工具
+
+  - name: 常用工具
+    icon: fas fa-tools
+    sites:
+      - name: GitHub
+        url: https://github.com
+        icon: fab fa-github
+        description: 代码托管平台
+      - name: ChatGPT
+        url: https://chat.openai.com
+        icon: fas fa-robot
+        description: AI 智能助手
+      - name: Google
+        url: https://www.google.com
+        icon: fab fa-google
+        description: 搜索引擎
+      - name: Stack Overflow
+        url: https://stackoverflow.com
+        icon: fab fa-stack-overflow
+        description: 程序员问答社区
+      - name: 掘金
+        url: https://juejin.cn
+        icon: fas fa-book
+        description: 高质量技术社区
+      - name: 哔哩哔哩
+        url: https://www.bilibili.com
+        icon: fas fa-play-circle
+        description: 视频学习平台
+
+  - name: AI 平台
+    icon: fas fa-sparkles
+    sites:
+      - name: Claude
+        url: https://claude.ai
+        icon: fas fa-message
+        description: Anthropic AI 助手
+      - name: DeepSeek
+        url: https://chat.deepseek.com
+        icon: fas fa-database
+        description: DeepSeek 对话
+      - name: Gemini
+        url: https://gemini.google.com
+        icon: fas fa-star
+        description: Google AI 助手

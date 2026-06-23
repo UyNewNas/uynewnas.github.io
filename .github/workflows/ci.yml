@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      browser_contract:
+        description: 'Run browser contract with Playwright'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fast check
+        run: npm run check
+
+      - name: Detect browser contract paths
+        id: browser_paths
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            browser_contract:
+              - 'assets/style.css'
+              - 'assets/styles/**'
+              - 'assets/pinyin-match.ts'
+              - 'config/_default/**'
+              - 'src/components/**'
+              - 'src/layouts/**'
+              - 'src/pages/**'
+              - 'src/lib/search-index/**'
+              - 'src/runtime/**'
+              - 'src/lib/site-model/**'
+              - 'src/lib/view-data/**'
+              - 'scripts/lib/public-assets.ts'
+              - 'scripts/lib/runtime-bundle.ts'
+              - 'scripts/lib/search-index-assets.ts'
+              - 'scripts/build-runtime.ts'
+              - 'scripts/prepare-astro-public.ts'
+              - 'test/browser/**'
+
+      - name: Install Playwright browsers
+        if: ${{ github.repository == 'rbetree/menav' && (steps.browser_paths.outputs.browser_contract == 'true' || (github.event_name == 'workflow_dispatch' && inputs.browser_contract)) }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser contract
+        if: ${{ github.repository == 'rbetree/menav' && (steps.browser_paths.outputs.browser_contract == 'true' || (github.event_name == 'workflow_dispatch' && inputs.browser_contract)) }}
+        run: npm run check:browser
