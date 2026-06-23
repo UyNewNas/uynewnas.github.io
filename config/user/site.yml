@@ -52,3 +52,7 @@ navigation:
     icon: 'fas fa-file-lines'
     id: 'post-locust-async'
     hidden: true
+  - name: '质数差集的同步覆盖猜想'
+    icon: 'fas fa-file-lines'
+    id: 'post-prime-diff-cover'
+    hidden: true

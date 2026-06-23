@@ -17,6 +17,10 @@ categories:
   - name: '2020'
     icon: fas fa-calendar
     sites:
+      - name: 质数差集的同步覆盖猜想
+        url: '?page=post-prime-diff-cover'
+        icon: fas fa-file-lines
+        description: 关于质数差覆盖无限次振荡的数学猜想，蕴含波利尼亚克猜想
       - name: Locust 异步压测插件
         url: '?page=post-locust-async'
         icon: fas fa-file-lines
