@@ -14,3 +14,7 @@ categories:
         url: '?page=post-hello-menav'
         icon: fas fa-file-lines
         description: MeNav 框架的功能介绍与使用体验
+      - name: Locust 异步压测插件
+        url: '?page=post-locust-async'
+        icon: fas fa-file-lines
+        description: 为 Locust 压测框架扩展 WebSocket 和 SSH 协议的异步支持

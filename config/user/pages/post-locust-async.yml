@@ -1,0 +1,6 @@
+title: Locust 异步压测插件
+subtitle: 为压测扩展 WebSocket 和 SSH 协议支持
+template: content
+
+content:
+  file: content/posts/locust-async.md

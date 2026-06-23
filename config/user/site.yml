@@ -48,3 +48,7 @@ navigation:
     icon: 'fas fa-file-lines'
     id: 'post-hello-menav'
     hidden: true
+  - name: 'Locust 异步压测插件'
+    icon: 'fas fa-file-lines'
+    id: 'post-locust-async'
+    hidden: true
