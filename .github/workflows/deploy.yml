@@ -2,7 +2,7 @@ name: Build and Deploy Site
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
   schedule:
     # 定时刷新 RSS / projects 仓库元信息（GitHub Actions 的 cron 使用 UTC 时区）
