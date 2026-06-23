@@ -37,3 +37,6 @@ navigation:
   - name: '项目'
     icon: 'fas fa-project-diagram'
     id: 'projects'
+  - name: '笔记'
+    icon: 'fas fa-pen-fancy'
+    id: 'notes'
